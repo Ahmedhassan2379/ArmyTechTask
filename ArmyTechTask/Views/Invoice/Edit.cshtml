@@ -1,0 +1,57 @@
+﻿
+@using ArmyTechTask.BLL.ViewModel.Invoice;
+@model UpdateInvoiceViewModel
+
+
+@using (Ajax.BeginForm("Edit", "Invoice", new AjaxOptions {HttpMethod = "PUT", InsertionMode = InsertionMode.Replace, UpdateTargetId = "invoices-list", OnSuccess = "onEditInvoiceSuccess()", OnFailure = "onEditInvoiceFailure()" }))
+{
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control", placeholder = "Customer Name" } })
+            @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Invoicedate, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.Invoicedate, new { htmlAttributes = new { @class = "form-control", placeholder = "Invoice Date" } })
+            @Html.ValidationMessageFor(model => model.Invoicedate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.BranchID, htmlAttributes: new { @class = "control-label" })
+            @Html.DropDownListFor(model => model.BranchID, Model.Branches, "Select Branch", new { @class = "form-control", placeholder = "Branch", id = "branch-ddl" })
+            @Html.ValidationMessageFor(model => model.BranchID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CashierID, htmlAttributes: new { @class = "control-label" })
+            @if (Model.CashierID.HasValue)
+            {
+                @Html.DropDownListFor(model => model.CashierID, Model.Cashiers, "Select Cashier", new { @class = "form-control", placeholder = "Cashier", id = "cashier-ddl" })
+            }
+            else
+            {
+                <select id="cashier-ddl" class="form-control" name="@nameof(Model.CashierID)" placeholder="Cashier"></select>
+            }
+            @Html.ValidationMessageFor(model => model.CashierID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <input type="submit" value="Save" class="btn btn-block btn-primary" />
+    </div>
+    <div class="col-md-4"></div>
+
+</div>
+}
+

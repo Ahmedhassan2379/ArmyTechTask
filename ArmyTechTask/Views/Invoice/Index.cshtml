@@ -1,0 +1,243 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .margin-10 {
+        margin-top: 10px;
+    }
+</style>
+
+<div class="row">
+    <br/> <br/>
+    <div class="col-md-12">
+        @Ajax.ActionLink("Create Invoice", "Create", "Invoice", null, new AjaxOptions {HttpMethod = "GET", InsertionMode = InsertionMode.Replace, UpdateTargetId = "invoice-modal-body", OnSuccess = "toggleInvoiceModal('Add New Invoice')"}, new {@class = "btn btn-primary"})
+    </div>
+
+    <br/><br/>
+
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="text-align:center;font-size:large;">Invoices</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="invoices-list">
+                            @Html.Action("InvoiceList")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="invoice-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="invoice-modal-title" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="invoice-modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="invoice-item-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="invoice-item-modal-title" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="invoice-item-modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(() => {
+
+        });
+
+        var invoiceItems = new Array();
+
+        function toggleInvoiceModal(title) {
+            invoiceItems = new Array();
+            $('#invoice-modal').modal('toggle');
+
+            if (title && title.length > 0) {
+                $('#invoice-modal-title').html(title);
+            }
+
+            if ($('#invoice-modal').is(':visible')) {
+                $('#branch-ddl').on('change', (el) => {
+                    const branchId = $(el.target).val();
+                    getCashiers(branchId);
+                });
+            }
+        }
+
+        function getCashiers(branchId) {
+            var cashiersDdl = $('#cashier-ddl');
+
+            cashiersDdl.empty();
+
+            cashiersDdl.append('<option selected="selected" disabled="disabled">Select Cashier</option>');
+
+            $.ajax({
+                url: "/Cashier/GetCashiersByBranchId?branchId=" + (+branchId),
+                method: "GET",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response,
+                        function(i, item) {
+                            cashiersDdl.append(`<option value="${item.ID}">${item.CashierName}</option>`);
+                        });
+                }
+            });
+        }
+
+        function addInvoiceItem() {
+            let name = $('#item-name-inp');
+            let count = $('#item-count-inp');
+            let price = $('#item-price-inp');
+
+            const resetAddItemForm = () => {
+                name.val('');
+                count.val(1);
+                price.val(1);
+
+                return;
+            }
+
+            if (!isAddInvoiceItemValid(name.val(), (+count.val()), (+price.val()))) {
+                resetAddItemForm();
+            }
+
+            appendNewInvoiceItem(name.val(), (+count.val()), (+price.val()));
+            resetAddItemForm();
+        }
+
+        function appendNewInvoiceItem(name, count, price) {
+
+            invoiceItems.push({
+                name: name,
+                count: +count,
+                price: +price,
+                total: +count * +price
+            });
+
+            buildInvoiceItemsTable();
+        }
+
+        function buildInvoiceItemsTable() {
+            var itemsListTable = $('#items-list');
+
+            itemsListTable.empty();
+
+            invoiceItems.forEach((item, index) => {
+                itemsListTable.append(`
+                <tr id="invoiceItem-${index}">
+                    <td>${item.name} <input type="hidden" name="InvoiceDetails[${index}].ItemName" value="${item.name}"/></td>
+                    <td>${item.count} <input type="hidden" name="InvoiceDetails[${index}].ItemCount" value="${item.count}" /></td>
+                    <td>${item.price} <input type="hidden" name="InvoiceDetails[${index}].ItemPrice" value="${item.price}" /></td>
+                    <td>${item.total}</td>
+                    <td><button class="btn btn-danger" onclick="removeInvoiceItem(${index})">Delete</button></td>
+                </tr>
+                `);
+            });
+        }
+
+        function removeInvoiceItem(itemIndex) {
+            invoiceItems.splice(itemIndex, 1);
+            buildInvoiceItemsTable();
+        }
+
+        function isAddInvoiceItemValid(name, count, price) {
+            return (name && name.length > 0 && count && count > 0 && price && price > 0);
+        }
+
+        function onCreateInvoiceSuccess() {
+            toastr.success('Invoice Added Successfully', 'Successful Operation');
+            toggleInvoiceModal();
+        }
+
+        function onCreateInvoiceFailure() {
+            toastr.error('Adding New Invoice Failed ... Please complete the form data and try again', 'Failure Operation');
+        }
+
+        function onEditInvoiceSuccess() {
+            toastr.success('Invoice Updated Successfully', 'Successful Operation');
+            toggleInvoiceModal();
+        }
+
+        function onEditInvoiceFailure() {
+            toastr.error('Updating Invoice Failed ... Please complete the form data and try again', 'Failure Operation');
+        }
+
+        function onDeleteInvoiceSuccess() {
+            toastr.success('Invoice Deleted Successfully', 'Successful Operation');
+        }
+
+        function onDeleteInvoiceFailure() {
+            toastr.error('Deleting Invoice Failed ... Please try again later', 'Failure Operation');
+        }
+
+
+        // Invoice Item Modal
+
+        function toggleInvoiceItemModal(title) {
+            $('#invoice-item-modal').modal('toggle');
+
+            if (title && title.length > 0) {
+                $('#invoice-item-modal-title').html(title);
+            }
+        }
+
+        function onAddInvoiceItemSuccess() {
+            toastr.success('Invoice Item Added Successfully', 'Successful Operation');
+            toggleInvoiceItemModal();
+        }
+
+        function onAddInvoiceItemFailure() {
+            toastr.error('Adding Invoice Item Failed ... Please complete the form data and try again', 'Failure Operation');
+        }
+
+        function onEditInvoiceItemSuccess() {
+            toastr.success('Invoice Item Updated Successfully', 'Successful Operation');
+            toggleInvoiceItemModal();
+        }
+
+        function onEditInvoiceItemFailure() {
+            toastr.error('Updating Invoice Item Failed ... Please complete the form data and try again', 'Failure Operation');
+        }
+
+        function onDeleteInvoiceItemSuccess() {
+            toastr.success('Invoice Item Deleted Successfully', 'Successful Operation');
+        }
+
+        function onDeleteInvoiceItemFailure() {
+            toastr.error('Deleting Invoice Item Failed ... Please try again later', 'Failure Operation');
+        }
+
+    </script>
+}

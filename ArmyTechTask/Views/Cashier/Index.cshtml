@@ -1,0 +1,58 @@
+﻿@using ArmyTechTask.BLL.ViewModel.Cashier;
+@model List<GetCashierViewModel>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div>
+                @Html.ActionLink("Create Cashier","CreateCashier", null,new { @class = "btn btn-primary" })
+            </div><br/>
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="text-align:center;font-size:large;">Cashiers</div>
+                <div class="panel-body">
+                    <div class="table" style="height: auto">
+                        <table class=" table table-striped table-bordered table-responsive">
+                            <thead class="thead-dark" >
+                            <tr>
+
+                                <th scope="col" style="text-align: center">Cashier Name</th>
+                                <th scope="col" style="text-align: center">Branch Name</th>
+                                <th scope="col" colspan="2" style="text-align: center">Actions</th>
+
+                            </tr>
+                            </thead>
+                            @{
+
+                                foreach (var item in Model)
+                                {
+
+                                    <tbody>
+                                    <tr>
+
+                                        <td style="text-align: center">@item.CashierName</td>
+                                        <td style="text-align: center">@item.Branch.BranchName</td>
+
+                                        <td colspan="2" style="text-align: center">
+                                            @Html.ActionLink("Edit", "UpdateCashier", new {Id = item.ID}, new { @class = "btn btn-dark" }) |
+                                            @Html.ActionLink("Remove", "DeleteCashier", new {Id = item.ID},new { @class = "btn btn-dark" })
+                                        </td>
+
+                                    </tr>
+                                    </tbody>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+        </div>
+    </div>
+

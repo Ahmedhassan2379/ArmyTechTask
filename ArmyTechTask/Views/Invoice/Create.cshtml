@@ -1,0 +1,94 @@
+﻿
+@using ArmyTechTask.BLL.ViewModel.Invoice;
+@model CreateInvoiceViewModel
+
+
+@using (Ajax.BeginForm("Create", "Invoice", new AjaxOptions {HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "invoices-list", OnSuccess = "onCreateInvoiceSuccess()", OnFailure = "onCreateInvoiceFailure()" }))
+{
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control", placeholder = "Customer Name" } })
+            @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.BranchID, htmlAttributes: new { @class = "control-label" })
+            @Html.DropDownListFor(model => model.BranchID, Model.Branches , "Select Branch", new { @class = "form-control", placeholder = "Branch", id = "branch-ddl" })
+            @Html.ValidationMessageFor(model => model.BranchID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CashierID, htmlAttributes: new { @class = "control-label" })
+            <select id="cashier-ddl" class="form-control" name="@nameof(Model.CashierID)" placeholder="Cashier"></select>
+            @Html.ValidationMessageFor(model => model.CashierID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    
+    <div class="col-md-12">
+        <div class="panel panel-success">
+            <div class="panel-heading">Add Invoice Item</div>
+            <div class="panel-body">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Item Name</label>
+                            <input type="text" id="item-name-inp" name="ItemName" placeholder="Item Name" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Item Count</label>
+                            <input type="number" min="1" value="1" name="ItemCount" id="item-count-inp" placeholder="Item Count" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Item Price</label>
+                            <input type="number" min="1" value="1" name="ItemPrice" id="item-price-inp" placeholder="Item Price" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-success" onclick="addInvoiceItem();">Add Item</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <h3> Invoice Items</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="items-list">
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <input type="submit" value="Save Invoice" class="btn btn-block btn-primary" />
+    </div>
+    <div class="col-md-4"></div>
+
+</div>
+}
+

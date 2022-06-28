@@ -1,0 +1,48 @@
+﻿
+@using ArmyTechTask.BLL.ViewModel.InvoiceDetails;
+@model CreateInvoiceDetailsViewModel
+
+
+@using (Ajax.BeginForm("CreateInvoiceItem", new AjaxOptions {HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "invoices-list", OnSuccess = "onAddInvoiceItemSuccess()", OnFailure = "onAddInvoiceItemFailure()" }))
+{
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ItemName, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.ItemName, new { htmlAttributes = new { @class = "form-control", placeholder = "Item Name" } })
+            @Html.ValidationMessageFor(model => model.ItemName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ItemCount, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.ItemCount, new { htmlAttributes = new { @class = "form-control", placeholder = "Quantity", type = "number", min = "1" } })
+            @Html.ValidationMessageFor(model => model.ItemCount, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    
+    <div class="col-md-12">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ItemPrice, htmlAttributes: new { @class = "control-label" })
+            @Html.EditorFor(model => model.ItemPrice, new { htmlAttributes = new { @class = "form-control", placeholder = "Price", type = "number", min = "1" } })
+            @Html.ValidationMessageFor(model => model.ItemPrice, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    
+    <div class="col-md-12">
+        <div class="form-group">
+            @Html.HiddenFor(model => model.InvoiceHeaderID)
+        </div>
+    </div>
+    
+    <div class="col-md-12 text-center">
+        <div class="form-group">
+            <input type="submit" value="Save Invoice" class="btn btn-block btn-primary" />
+        </div>
+    </div>
+
+</div>
+}
+

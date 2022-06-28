@@ -1,0 +1,33 @@
+﻿@using ArmyTechTask.BLL.ViewModel.Cashier;
+@model UpdateCashierViewModel
+@{
+    ViewBag.Title = "UpdateCashier";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div class="panel panel-primary">
+    <div class="panel-heading" style="font-size:20px;"> Edit Cashier </div>
+    
+    <div class="panel-body">
+        @using (Html.BeginForm("UpdateCashier", "Cashier"))
+        {
+            @Html.ValidationSummary(true, "Please Fix The Following Errors")
+            <div class="form-group">
+                @Html.HiddenFor(m => m.ID)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.CashierName)
+                @Html.TextBoxFor(m => m.CashierName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CashierName, "", htmlAttributes: new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.BranchID)
+                @Html.DropDownListFor(m => m.BranchID, new SelectList(Model.Branches, "ID", "BranchName"), new { @class = "form-control" })
+
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        }
+    </div>
+</div>
